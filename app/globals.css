@@ -369,20 +369,26 @@ footer p {
   color: var(--muted);
 }
 .nearby {
-  padding: 56px 0 82px;
+  padding: 28px 0 82px;
 }
 .nearby-heading {
   display: flex;
-  align-items: end;
+  align-items: center;
   justify-content: space-between;
   gap: 28px;
+  margin-bottom: 24px;
 }
 .nearby h1 {
-  font-size: clamp(48px, 6vw, 76px);
+  margin: 7px 0 8px;
+  font-size: clamp(36px, 4.2vw, 52px);
+  letter-spacing: -2.5px;
 }
-.nearby-status {
-  margin: 0;
+.nearby-location-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
   color: var(--muted);
+  font-size: 12px;
 }
 .locate-button {
   padding: 13px 17px;
@@ -406,12 +412,14 @@ footer p {
 }
 .list-label {
   padding: 20px 23px;
-  border-bottom: 1px solid #e5e6df;
+  background: #edf0e6;
+  border-bottom: 1px solid #d7ddd0;
+  color: var(--ink);
 }
 .truck-stop {
   display: grid;
-  grid-template-columns: 88px 1fr 20px;
-  gap: 15px;
+  grid-template-columns: 70px 1fr 20px;
+  gap: 14px;
   align-items: center;
   width: 100%;
   padding: 17px 22px;
@@ -426,30 +434,42 @@ footer p {
 .truck-stop.is-selected {
   background: #eef1e7;
 }
-.stop-date {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  color: var(--orange);
-  font-size: 11px;
+.truck-thumbnail {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 70px;
+  height: 70px;
+  overflow: hidden;
+  background: #eef1e7;
+  color: #8b958d;
+  font-size: 24px;
 }
-.stop-date span,
-.truck-stop div:nth-child(2) > span {
+.truck-thumbnail img {
+  object-fit: cover;
+}
+.stop-details > span {
+  display: block;
+  margin-top: 3px;
   font-size: 11px;
   color: var(--muted);
   line-height: 1.35;
 }
-.truck-stop strong,
-.truck-stop div:nth-child(2) > span,
-.truck-stop small {
-  display: block;
-}
 .truck-stop strong {
-  margin-bottom: 4px;
   font-size: 14px;
 }
-.truck-stop small {
-  margin-top: 5px;
+.stop-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px 10px;
+  align-items: center;
+  margin-top: 8px;
+}
+.stop-meta b {
+  color: var(--orange);
+  font-size: 10px;
+}
+.stop-meta small {
   color: #628132;
   font-size: 10px;
   font-weight: 800;
