@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import type { CircleMarker as LeafletCircleMarker } from "leaflet";
+import { useEffect, useRef, type RefObject } from "react";
 import {
   CircleMarker,
   MapContainer,
@@ -38,11 +39,42 @@ function FitToLocations({ locations }: { locations: Location[] }) {
   return null;
 }
 
+function ActivateSelectedStop({
+  location,
+  markers,
+}: {
+  location: Location | undefined;
+  markers: RefObject<Record<number, LeafletCircleMarker | null>>;
+}) {
+  const map = useMap();
+
+  useEffect(() => {
+    const marker = location ? markers.current[location.id] : null;
+
+    if (!location || !marker) return;
+
+    const latitude = Number(location.latitude);
+    const longitude = Number(location.longitude);
+
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return;
+
+    map.flyTo([latitude, longitude], Math.max(map.getZoom(), 12), {
+      duration: 0.45,
+    });
+    marker.openPopup();
+  }, [location, map, markers]);
+
+  return null;
+}
+
 export default function NearbyMap({
   locations,
   selected,
   onSelect,
 }: NearbyMapProps) {
+  const markers = useRef<Record<number, LeafletCircleMarker | null>>({});
+  const selectedLocation = locations[selected];
+
   return (
     <div className="nearby-map">
       <MapContainer
@@ -56,6 +88,10 @@ export default function NearbyMap({
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <FitToLocations locations={locations} />
+        <ActivateSelectedStop
+          location={selectedLocation}
+          markers={markers}
+        />
         {locations.map((location, index) => {
           const latitude = Number(location.latitude);
           const longitude = Number(location.longitude);
@@ -70,6 +106,9 @@ export default function NearbyMap({
               center={[latitude, longitude]}
               eventHandlers={{ click: () => onSelect(index) }}
               key={location.id}
+              ref={(marker) => {
+                markers.current[location.id] = marker;
+              }}
               pathOptions={{
                 color: "#ffffff",
                 fillColor: isSelected ? "#19352c" : "#f15a35",
