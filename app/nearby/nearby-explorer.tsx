@@ -1,9 +1,11 @@
 "use client";
 
-import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type { Location } from "../../lib/mobilenom";
+
+const NearbyMap = dynamic(() => import("./nearby-map"), { ssr: false });
 
 const fallback = { latitude: 40.4406, longitude: -79.9959 };
 const day = (value: string) => new Intl.DateTimeFormat(
@@ -58,7 +60,7 @@ export default function NearbyExplorer() {
     },
     () => setStatus("Location access is off. Showing Pittsburgh-area trucks."),
   );
-  const pins = useMemo(() => locations.slice(0, 12), [locations]);
+  const mapLocations = useMemo(() => locations.slice(0, 12), [locations]);
 
   return (
     <section className="nearby shell">
@@ -100,32 +102,11 @@ export default function NearbyExplorer() {
           {!locations.length && <div className="empty">Loading the latest schedule…</div>}
         </aside>
         <div className="map-canvas">
-          <div className="map-grid" />
-          <div className="map-street street-one" />
-          <div className="map-street street-two" />
-          {pins.map((location, index) => (
-            <button
-              aria-label={`Show ${location.trucks[0]?.name}`}
-              className={`nearby-pin ${selected === index ? "is-active" : ""}`}
-              style={{
-                left: `${17 + ((Number(location.longitude) * -11.7) % 63 + 63) % 63}%`,
-                top: `${16 + ((Number(location.latitude) * 17.2) % 61 + 61) % 61}%`,
-              }}
-              onClick={() => setSelected(index)}
-              key={location.id}
-            >
-              {index + 1}
-            </button>
-          ))}
-          {locations[selected] && (
-            <div className="map-popover">
-              <p>{locations[selected].isActive ? "OPEN NOW" : day(locations[selected].startsAt)}</p>
-              <strong>{locations[selected].trucks[0]?.name}</strong>
-              <span>{locations[selected].landmark}</span>
-              <Link href={`/${locations[selected].trucks[0]?.handle}`}>View truck →</Link>
-            </div>
-          )}
-          <div className="map-key">Live schedule<br /><b>●</b> truck stop</div>
+          <NearbyMap
+            locations={mapLocations}
+            selected={selected}
+            onSelect={setSelected}
+          />
         </div>
       </div>
     </section>
